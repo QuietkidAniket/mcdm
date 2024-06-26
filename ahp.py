@@ -84,14 +84,25 @@ class AHP:
 
 
     def run(self):
+        """ returns a json of format:
+            'criteria_comparison_matrix'    : the pairwise comparison matrix of criteria
+            'alternative_matrices'          : the alternative matrix
+            'Ranking data'                  : the data each alternative's ranking score
+            'Ranking list'                  : the ordered list of alternatives by ranks
+            'weights'                       : weights of the AHP model's alternative selection process
+            'consistency_ratio'             : consistency ratio
+            'eigen value'                   : eigen value of the associated criteria matrix
+            'eigen vector'                  : eigen vector of the associated criteria matrix's rows
+        """
         self.calculate_weights()
         self.calculate_consistency_ratio()
         rankings, eig_val, eig_vec = self.rank_alternatives()
         # Ranking the alternatives from the ranked indices
         ranked_alternatives = [self.alternatives[i] for i in rankings]
         return {
-                'pairwise_matrix': self.pairwise_matrix.tolist(),
+                'criteria_comparison_matrix': self.pairwise_matrix.tolist(),
                 'alternative_matrices': self.alternative_matrix.tolist(),
+                'Ranking data': rankings.tolist(),
                 'Ranking list': ranked_alternatives,
                 'weights': self.weights.tolist(),
                 'consistency_ratio': self.consistency_ratio,

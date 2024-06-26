@@ -16,25 +16,25 @@ def get_comparisons(no_of_criteria=int, criteria=list):
     return comparisons
 
 
-def get_pairwise_comparison_matrix(comparisons=dict, no_of_criteria=int, criteria=list):
+def get_pairwise_comparison_matrix(comparisons=dict, no_of_criteria=int, criteria_list=list):
     """ 
     comparisons : (criteria,criteria) (tuple) : comparison score (float) dictionary
     no_of_criteria : the number of criteria,
-    criteria : list of strings of all criteria namesa
+    criteria_list : list of strings of all criteria namesa
     """
-    if no_of_criteria != len(criteria):
+    if no_of_criteria != len(criteria_list):
         raise ValueError("Number of criteria doesn't match with the number of criteria provided")
     
     # pairwise comparison matrix
     pairwise_matrix = np.ones((no_of_criteria, no_of_criteria),dtype='int32').tolist()
 
     # indexing the criteria names
-    criteria = dict(zip([x for x in range(no_of_criteria)], criteria))
+    criteria_list = dict(zip([x for x in range(no_of_criteria)], criteria_list))
 
     for i in range(no_of_criteria):
         for j in range(i+1,no_of_criteria):
-                pairwise_matrix[i][j] = comparisons[(criteria[i],criteria[j])]
-                pairwise_matrix[j][i] = 1/comparisons[(criteria[i],criteria[j])]
+                pairwise_matrix[i][j] = comparisons[(criteria_list[i],criteria_list[j])]
+                pairwise_matrix[j][i] = 1/comparisons[(criteria_list[i],criteria_list[j])]
     
     
     return pairwise_matrix
