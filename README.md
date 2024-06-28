@@ -27,7 +27,7 @@ use the following steps to run AHP:
 * call the ```AHP.run()``` to run the AHP algorithm and get the required results in json format.
 
 
-## Topsis - Technique 
+## Topsis - Technique for Order of Preference by Similarity to Ideal Solution
 
 *   > from ahptopsis import AHPTOPSIS
 

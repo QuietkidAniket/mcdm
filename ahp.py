@@ -43,7 +43,7 @@ class AHP:
     def calculate_weights(self):
         # weights of each criteria = eigenvector of that row /sum of eigenvector elements
         eig_val, eig_vec = np.linalg.eig(self.pairwise_matrix)
-        self.weights = eig_vec[:, 0] / np.sum(eig_vec[:, 0])
+        self.weights = eig_vec[:, 0] / np.sum(eig_vec[:, 0]) 
 
 
 

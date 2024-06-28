@@ -4,6 +4,26 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 
+
+random_index_choices = {
+    # number of criteria : Random Index (Saaty, 1980)
+    1:0.00,
+    2:0.00,
+    3:0.58,
+    4:0.90,
+    5:1.12,
+    6:1.24,
+    7:1.32,
+    8:1.41,
+    9:1.45,
+    10:1.49,
+    11:1.51,
+    12:1.48,
+    13:1.56,
+    14:1.57,
+    15:1.58
+}
+
 class AHPTOPSIS:
     def __init__(self, criteria=dict, alternatives=dict):
 
@@ -63,7 +83,7 @@ class AHPTOPSIS:
         ci = (lambda_max - n) / (n - 1)
 
         # random index
-        ri = 1.98 * (n - 2) / n
+        ri  = random_index_choices.get(self.num_criteria, 1.49)
 
         # consistency ratio
         cr = ci / ri
