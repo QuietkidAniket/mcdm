@@ -11,7 +11,7 @@ ahp.py contains class ```AHP``` for Analytic Hierarchical Process
 use the following steps to run AHP:
 
 *   >from ahp import AHP
-    >import criteria_comparison_matrix
+    >import comparison_matrix
     
 
 * create an AHP object using ```AHP(criteria, alternative, project_name)```
