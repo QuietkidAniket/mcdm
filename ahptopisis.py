@@ -1,8 +1,6 @@
 import numpy as np
 #from scipy.linalg import eig
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-
+from typing import Any
 
 
 random_index_choices = {
@@ -25,7 +23,7 @@ random_index_choices = {
 }
 
 class AHPTOPSIS:
-    def __init__(self, criteria=dict, alternatives=dict):
+    def __init__(self, criteria:dict, alternatives:dict):
 
         
         self.criteria_names = list(criteria.keys())
@@ -61,7 +59,7 @@ class AHPTOPSIS:
 
     
 
-    def calculate_weights(self):
+    def calculate_weights(self)-> tuple[np.ndarray, np.ndarray, np.ndarray, float, float, str]:
         matrix = np.array(self.criteria)
 
         # calculating the row sum vector
@@ -83,7 +81,7 @@ class AHPTOPSIS:
         ci = (lambda_max - n) / (n - 1)
 
         # random index
-        ri  = random_index_choices.get(self.num_criteria, 1.49)
+        ri  = random_index_choices.get( len(self.criteria_names), 1.49)
 
         # consistency ratio
         cr = ci / ri
@@ -96,7 +94,7 @@ class AHPTOPSIS:
         return matrix, norm_matrix, weights, ci, cr, err
 
 
-    def calculate_rankings(self, weights):
+    def calculate_rankings(self, weights: np.ndarray)-> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         # Matrix of Alternative data in rows and criteria as columns
         matrix = np.array(self.alternatives)
         # Vector Normalization for each cell
@@ -116,10 +114,8 @@ class AHPTOPSIS:
 
         return norm_matrix, weighted_matrix, ideal_best, ideal_worst, s_plus, s_minus, rankings
 
-    def run(self):
+    def run(self) -> dict[str, Any]:
         matrix, norm_matrix, weights, ci, cr, err = self.calculate_weights()
-
-        
 
         norm_matrix, weighted_matrix, ideal_best, ideal_worst, s_plus, s_minus, rankings  = self.calculate_rankings(weights)
 
@@ -147,34 +143,3 @@ class AHPTOPSIS:
             "Consistency Ration (CR)" : cr,
             "Criteria_Error" : err
         }
-
-
-# ................................ Flask API ....................................
-
-# app = Flask(__name__)
-# CORS(app)
-
-# @app.route('/ahp_topsis', methods=['POST'])
-# def run_ahp_topsis():
-#     data = request.get_json()
-#     criteria = data.get('criteria')
-#     alternatives = data.get('alternatives')
-
-#     if not criteria or not alternatives:
-#         return jsonify({'error': 'Missing criteria or alternatives'}), 400
-
-#     ahp_topsis = AHPTOPSIS(criteria, alternatives)
-#     results = ahp_topsis.run()
-
-#     return jsonify(results)
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
-    
-
-#Example of JSON REQUEST BODY to /ahp_topsis endpoint
-  #  curl -X POST -H "Content-Type: application/json" -d '{"criteria" : { "criteria1": [0.1, 0.2, 0.3],"criteria2": [0.4, 0.5, 0.6],"criteria3": [0.7, 0.8, 0.9]},"alternatives" : {"alternative1": [1, 2, 3],"alternative2": [2, 3, 4],"alternative3": [3, 4, 5]}}' http://localhost:5000/ahp_topsis
-
-
-
-# .....................................................

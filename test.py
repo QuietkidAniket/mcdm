@@ -1,6 +1,6 @@
 from ahptopisis import AHPTOPSIS
 from ahp import AHP
-import criteria_comparison_matrix
+import comparison_matrix
 
 json_topsis  = {
     "criteria": {
@@ -65,7 +65,7 @@ def test_ahp():
 
     alternatives = json_ahp["alternatives"]
 
-    ahp = AHP(criteria, alternatives)
+    ahp = AHP(criteria, alternatives, "Supplier selection")
 
     ahp.set_pairwise_matrix(json_ahp["pairwise_matrix"])
     
@@ -79,5 +79,5 @@ def test_ahp():
 
     print(rankings)
 
-test_ahp()
+test_topsis()
 

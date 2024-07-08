@@ -16,9 +16,9 @@ use the following steps to run AHP:
 
 * create an AHP object using ```AHP(criteria, alternative, project_name)```
 
-* call the ```criteria_comparison_matrix.get_comparisons(no_of_criteria, criteria_list)``` to get a dictionary of criteria comparisons which shall serve as a template for the pairwise comparison matrix.
+* call the ```comparison_matrix.get_comparisons(n, items)``` to get a dictionary of criteria comparisons which shall serve as a template for the pairwise comparison matrix.
 
-* call the ```criteria_comparison_matrix.get_pairwise_comparison_matrix(comparisons, no_of_criteria, criteria_list)``` to get the pairwise comparison matrix in form of a list.
+* call the ```comparison_matrix.get_pairwise_comparison_matrix(comparisons, n, items)``` to get the pairwise comparison matrix in form of a list.
 
 * call the ```AHP.set_pairwise_matrix(matrix)``` to set the pairwise comparison matrix 
 
