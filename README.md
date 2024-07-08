@@ -22,7 +22,7 @@ use the following steps to run AHP:
 
 * call the ```AHP.set_pairwise_matrix(matrix)``` to set the pairwise comparison matrix 
 
-* call the ```AHP.set_alternative_matrix(matrix)``` to set the alternative comparison matrix
+* call the ```AHP.set_alternative_matrix(i ,matrix)``` to set the alternative comparison matrix at the index i
 
 * call the ```AHP.run()``` to run the AHP algorithm and get the required results in json format.
 
