@@ -3,12 +3,14 @@ from ahp import AHP
 import comparison_matrix
 
 json_topsis  = {
+    # criteria wrt criteria
     "criteria": {
         "Criterion1": ["good", "average", "bad", "good"],
         "Criterion2": ["bad", "good", "average", "bad"],
         "Criterion3": ["average", "good", "good", "average"],
         "Criterion4": ["good", "bad", "good", "bad"]
     },
+    # alternatives (rows) wrt criteria (column) 
     "alternatives": {
         "Alternative1": ["good", "bad", "average", "good"],
         "Alternative2": ["bad", "bad", "good", "bad"],
@@ -80,4 +82,5 @@ def test_ahp():
     print(rankings)
 
 test_topsis()
+test_ahp()
 

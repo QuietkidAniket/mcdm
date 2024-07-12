@@ -1,5 +1,5 @@
 import numpy as np
-#from scipy.linalg import eig
+import torch
 from typing import Any
 
 
@@ -59,20 +59,22 @@ class AHPTOPSIS:
 
     
 
-    def calculate_weights(self)-> tuple[np.ndarray, np.ndarray, np.ndarray, float, float, str]:
-        matrix = np.array(self.criteria)
+    def calculate_weights(self)-> tuple[torch.Tensor, torch.Tensor, torch.Tensor, float, float, str]:
+        matrix = torch.Tensor(self.criteria)
+
 
         # calculating the row sum vector
-        row_sum = np.sum(matrix, axis=1)
+        row_sum = torch.sum(matrix, axis=1)
+        row_sum.unsqueeze_(1)
 
         # normalized matrix = original matrix (rows)/ row sum vector (alternatives)
-        norm_matrix = matrix / row_sum[:, np.newaxis]
+        norm_matrix = matrix / row_sum
         
         # weights = unweighted mean of the columns/critera of normalized matrix
-        weights = np.mean(norm_matrix, axis=0)
+        weights = torch.mean(norm_matrix, axis=0)
 
         # λ_max = weighted sum of columns / sum of columnar weights 
-        lambda_max = np.sum(weights * np.sum(matrix, axis=0)) / np.sum(weights)
+        lambda_max = torch.dot(weights , torch.sum(matrix, axis=0)) / torch.sum(weights)
 
         # n = no. of criteria
         n = matrix.shape[0] 
@@ -91,29 +93,32 @@ class AHPTOPSIS:
         if cr > 0.1:
             err = "Consistency ratio is greater than 0.1, please revise your criteria matrix."
             
-        return matrix, norm_matrix, weights, ci, cr, err
+        return matrix, norm_matrix, weights, float(ci), float(cr), err
 
 
-    def calculate_rankings(self, weights: np.ndarray)-> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def calculate_rankings(self, weights: torch.Tensor)-> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         # Matrix of Alternative data in rows and criteria as columns
-        matrix = np.array(self.alternatives)
+        matrix = torch.Tensor(self.alternatives)
         # Vector Normalization for each cell
-        norm_matrix = matrix / np.sqrt(np.sum(matrix**2, axis=0))
+        norm_matrix = matrix / torch.sqrt(torch.sum(matrix**2, axis=0))
+
         # Weighted Normalized Decision Matrix which is a result of dot product of Normalized Matrix and Criteria weight Vector 
-        weighted_matrix = norm_matrix * weights
+        weighted_matrix = torch.mul(weights, norm_matrix)
 
         # Ideal best and worst vectors calculated with reference to the maximum and minimum value of the criteria in the column
-        ideal_best = np.max(weighted_matrix, axis=0)
-        ideal_worst = np.min(weighted_matrix, axis=0)
+        ideal_best = torch.max(weighted_matrix, axis=0).values
+        ideal_worst = torch.min(weighted_matrix, axis=0).values
 
         # Eucledian Distances from the ideal best and worst vectors to the row vectors
-        s_plus = np.sqrt(np.sum((weighted_matrix - ideal_best)**2, axis=1)); s_minus = np.sqrt(np.sum((weighted_matrix - ideal_worst)**2, axis=1))
+        s_plus = torch.sqrt(torch.sum((weighted_matrix - ideal_best)**2, axis=1)); s_minus = torch.sqrt(torch.sum((weighted_matrix - ideal_worst)**2, axis=1))
 
         # ranking vector
         rankings = s_minus / (s_plus + s_minus)
 
         return norm_matrix, weighted_matrix, ideal_best, ideal_worst, s_plus, s_minus, rankings
 
+    
+    
     def run(self) -> dict[str, Any]:
         matrix, norm_matrix, weights, ci, cr, err = self.calculate_weights()
 
@@ -121,10 +126,10 @@ class AHPTOPSIS:
 
         ranking_data = {name: rank for name, rank in zip(self.alternatives_names, rankings.tolist())}
         
-        # # Sort the rankings dictionary by its values and get the keys
+        # Sort the rankings dictionary by its values and get the keys
         sorted_rankings = sorted(ranking_data, key=ranking_data.get, reverse=True)
 
-        # # Create a new rankings dictionary with ranks instead of scores
+        # Create a new rankings dictionary with ranks instead of scores
         ranked_alternatives = {alternative: rank+1 for rank, alternative in enumerate(sorted_rankings)}
         
         return {
