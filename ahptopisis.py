@@ -24,7 +24,9 @@ random_index_choices = {
 
 class AHPTOPSIS:
     def __init__(self, criteria:dict, alternatives:dict):
-
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")    
         
         self.criteria_names = list(criteria.keys())
         self.alternatives_names = list(alternatives.keys())
@@ -60,7 +62,7 @@ class AHPTOPSIS:
     
 
     def calculate_weights(self)-> tuple[torch.Tensor, torch.Tensor, torch.Tensor, float, float, str]:
-        matrix = torch.Tensor(self.criteria)
+        matrix = torch.Tensor(self.criteria, device = self.device)
 
 
         # calculating the row sum vector
@@ -98,7 +100,7 @@ class AHPTOPSIS:
 
     def calculate_rankings(self, weights: torch.Tensor)-> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         # Matrix of Alternative data in rows and criteria as columns
-        matrix = torch.Tensor(self.alternatives)
+        matrix = torch.Tensor(self.alternatives, device = self.device)
         # Vector Normalization for each cell
         norm_matrix = matrix / torch.sqrt(torch.sum(matrix**2, axis=0))
 
